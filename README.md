@@ -8,3 +8,6 @@ at Constructor University.
 
 ## Format
 Standalone HTML file — open in any browser, no dependencies needed.
+
+## Live Demo
+[View Presentation](https://taim-ss.github.io/MicroMacro-Economics-Presentation/MICROMACRO%20presentation.html)
