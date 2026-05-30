@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Economics: The Micro and Macro Perspective</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,600;0,700;0,900;1,900&family=Lato:ital,wght@0,300;0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --navy:   #1A2B3C;
+            --navy-dark: #0F1824;
+            --gold:   #D4AF37;
+            --white:  #FFFFFF;
+            --coral:  #FF6B6B;
+            --teal:   #00C9A7;
+            --purple: #7C3AED;
+            --sky:    #38BDF8;
+        }
+        
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { 
+            width: 100%; height: 100%; 
+            font-family: 'Lato', sans-serif; 
+            background: var(--navy-dark); 
+            overflow: hidden; 
+            color: var(--white);
+        }
+
+        .font-display { font-family: 'Poppins', sans-serif; }
+
+        /* Slide Container */
+        .deck { position: relative; width: 100vw; height: 100vh; }
+        .slide {
+            position: absolute; inset: 0;
+            opacity: 0; pointer-events: none;
+            transform: translateX(50px) scale(.98);
+            transition: opacity .55s cubic-bezier(.4,0,.2,1), transform .55s cubic-bezier(.4,0,.2,1);
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .slide.active { opacity: 1; pointer-events: all; transform: translateX(0) scale(1); }
+        .slide.exit { opacity: 0; transform: translateX(-50px) scale(.98); pointer-events: none; }
+
+        /* Navigation */
+        .nav {
+            position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+            display: flex; align-items: center; gap: 14px;
+            background: rgba(15, 24, 36, 0.9); border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 50px; padding: 9px 22px; backdrop-filter: blur(20px); z-index: 999;
+        }
+        .nav button {
+            background: none; border: none; color: rgba(255,255,255,0.45);
+            font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 700;
+            letter-spacing: .08em; cursor: pointer; padding: 5px 15px; border-radius: 30px; transition: all .2s;
+        }
+        .nav button:hover { background: rgba(255,255,255,0.1); color: #fff; }
+        .nav button:disabled { opacity: .16; cursor: default; }
+        .dots { display: flex; gap: 7px; align-items: center; }
+        .dot { width: 7px; height: 7px; border-radius: 50%; background: rgba(255,255,255,0.2); cursor: pointer; transition: all .3s; }
+        .dot.active { background: var(--gold); width: 22px; border-radius: 4px; }
+
+        /* Animations */
+        @keyframes up { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+        /* Common Slide Elements */
+        .container { width: 90%; max-width: 1200px; margin: 0 auto; z-index: 10; position: relative; }
+        .slide-num { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: .3em; text-transform: uppercase; color: rgba(255,255,255,0.35); margin-bottom: 10px; }
+        .gold-divider { height: 3px; width: 60px; background-color: var(--gold); margin: 1.5rem 0; border-radius: 2px; }
+        .chip { display: inline-flex; align-items: center; gap: 7px; font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; padding: 5px 14px; border-radius: 30px; margin-bottom: 16px; border: 1px solid var(--gold); color: var(--gold); background: rgba(212,175,55,0.1); }
+
+        /* --- SLIDE 1: TITLE --- */
+        #s1 { background: linear-gradient(135deg, #0F1824 0%, #1A2B3C 45%, #0F1824 100%); text-align: center; }
+        #s1 .blob { position: absolute; border-radius: 50%; pointer-events: none; }
+        #s1 .b1 { width: 520px; height: 520px; top: -140px; left: -140px; background: radial-gradient(circle, rgba(212,175,55,0.15) 0%, transparent 65%); animation: float 9s ease-in-out infinite; }
+        #s1 .b2 { width: 440px; height: 440px; bottom: -100px; right: -110px; background: radial-gradient(circle, rgba(56,189,248,0.15) 0%, transparent 65%); animation: float 11s ease-in-out infinite reverse; }
+        #s1 h1 { font-family: 'Poppins', sans-serif; font-weight: 900; font-size: clamp(40px, 5.5vw, 72px); line-height: 1.1; color: var(--white); opacity: 0; animation: up .6s .25s forwards; margin-bottom: 1rem; }
+        #s1 h2 { font-size: 1.8rem; color: var(--gold); font-weight: 300; margin-bottom: 2rem; opacity: 0; animation: up .6s .4s forwards; }
+        #s1 .presenter { font-family: 'Poppins', sans-serif; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 2px; color: rgba(255, 255, 255, 0.7); border-top: 1px solid rgba(212,175,55,0.3); padding-top: 1rem; display: inline-block; opacity: 0; animation: up .6s .55s forwards; }
+
+        /* --- SLIDE 2: FOUNDATION / PREFIX --- */
+        #s2 { background: linear-gradient(150deg, #071927 0%, #0f2d40 55%, #071927 100%); }
+        .split-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
+        #s2 h2 { font-family: 'Poppins', sans-serif; font-size: 3rem; font-weight: 800; margin-bottom: 0.5rem; }
+        #s2 .intro-text { font-size: 1.1rem; color: rgba(255,255,255,0.7); margin-bottom: 2rem; line-height: 1.6; }
+        .pillar { padding: 2rem; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.03); }
+        .pillar-micro { border-top: 4px solid var(--teal); }
+        .pillar-macro { border-top: 4px solid var(--coral); }
+        .greek-char { font-family: 'Poppins', sans-serif; font-weight: 800; font-size: 48px; line-height: 1; margin-bottom: 10px; }
+        .pillar-micro .greek-char { color: var(--teal); }
+        .pillar-macro .greek-char { color: var(--coral); }
+        .pillar h3 { font-family: 'Poppins', sans-serif; font-size: 1.8rem; margin-bottom: 0.5rem; }
+        .pillar p { font-size: 0.95rem; color: rgba(255,255,255,0.7); line-height: 1.6; }
+        
+        /* --- SLIDE 3 & 4: MICRO & MACRO CONTENT --- */
+        .content-slide { background: var(--navy-dark); }
+        .content-slide::before { content: ''; position: absolute; inset: 0; background-image: linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px); background-size: 40px 40px; pointer-events: none; }
+        .text-content h2 { font-family: 'Poppins', sans-serif; font-size: 3.5rem; font-weight: 800; line-height: 1.1; margin-bottom: 1rem; }
+        .text-content .subtitle { font-size: 1.3rem; margin-bottom: 1.5rem; font-weight: 300; }
+        .text-content.micro .subtitle { color: var(--teal); }
+        .text-content.macro .subtitle { color: var(--coral); }
+        
+        .bullet-list { list-style: none; margin-top: 1.5rem; }
+        .bullet-list li { margin-bottom: 1.2rem; display: flex; gap: 15px; align-items: flex-start; }
+        .bullet-num { flex-shrink: 0; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 12px; }
+        .micro .bullet-num { border: 1.5px solid var(--teal); color: var(--teal); }
+        .macro .bullet-num { border: 1.5px solid var(--coral); color: var(--coral); }
+        .bullet-title { font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 1.1rem; margin-bottom: 4px; }
+        .bullet-desc { font-size: 0.9rem; color: rgba(255,255,255,0.6); }
+
+        .visual-box { width: 100%; border-radius: 12px; overflow: hidden; position: relative; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+        .visual-box img { width: 100%; height: 350px; object-fit: cover; display: block; filter: brightness(0.85); }
+        .visual-caption { position: absolute; bottom: 0; left: 0; right: 0; padding: 15px; background: rgba(0,0,0,0.7); backdrop-filter: blur(5px); font-size: 0.9rem; border-top: 1px solid rgba(255,255,255,0.1); }
+        .micro .visual-caption { color: var(--teal); border-top-color: rgba(0,201,167,0.3); }
+        .macro .visual-caption { color: var(--coral); border-top-color: rgba(255,107,107,0.3); }
+
+        .metrics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 1.5rem; }
+        .metric-card { background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px; border-left: 3px solid var(--coral); }
+        .metric-card span { display: block; font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 1.2rem; margin-bottom: 5px; }
+        .metric-card small { font-size: 0.85rem; color: rgba(255,255,255,0.6); }
+
+        /* --- SLIDE 5: Q&A SUMMARY --- */
+        #s5 { background: linear-gradient(135deg, #0f0c29 0%, #1a1a4e 50%, #0f0c29 100%); text-align: center; }
+        .compare-grid { display: grid; grid-template-columns: 1fr auto 1fr; gap: 2rem; align-items: stretch; margin-top: 3rem; text-align: left; }
+        .compare-col { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 2rem; }
+        .compare-col.micro-col { border-top: 4px solid var(--teal); }
+        .compare-col.macro-col { border-top: 4px solid var(--coral); }
+        .compare-col h3 { font-family: 'Poppins', sans-serif; font-size: 1.5rem; margin-bottom: 1.5rem; }
+        .micro-col h3 { color: var(--teal); }
+        .macro-col h3 { color: var(--coral); }
+        .compare-col ul { list-style: none; }
+        .compare-col ul li { font-size: 0.95rem; color: rgba(255,255,255,0.7); margin-bottom: 1rem; padding-left: 1.5rem; position: relative; }
+        .compare-col ul li::before { content: "→"; position: absolute; left: 0; font-weight: bold; }
+        .micro-col ul li::before { color: var(--teal); }
+        .macro-col ul li::before { color: var(--coral); }
+        .vs-badge { display: flex; align-items: center; font-family: 'Poppins', sans-serif; font-weight: 900; font-size: 24px; color: rgba(255,255,255,0.2); }
+
+        @media (max-width: 900px) {
+            .split-layout, .compare-grid { grid-template-columns: 1fr; gap: 2rem; }
+            .vs-badge { display: none; }
+            .slide { align-items: flex-start; padding-top: 3rem; overflow-y: auto; }
+            .visual-box img { height: 200px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="deck">
+
+    <div class="slide active" id="s1">
+        <div class="blob b1"></div>
+        <div class="blob b2"></div>
+        <div class="container">
+            <p class="slide-num" style="animation: up .6s .1s forwards; opacity: 0;">ECON 101 · Introduction</p>
+            <h1>Economics:<br>
+                <span style="color: var(--teal); font-style: italic; font-weight: 300;">The Micro</span> and 
+                <span style="color: var(--coral); font-style: italic; font-weight: 300;">Macro</span> Perspective
+            </h1>
+            <h2>Understanding the Lens of Modern Economy</h2>
+            <div style="display: flex; justify-content: center;">
+                <div class="gold-divider" style="opacity: 0; animation: up .6s .45s forwards;"></div>
+            </div>
+            <p class="presenter">Presented by Taim Salimoun</p>
+        </div>
+    </div>
+
+    <div class="slide" id="s2">
+        <div class="container">
+            <p class="slide-num">02 — The Foundation</p>
+            <div class="split-layout">
+                <div>
+                    <h2>The Power of the <span style="color: var(--gold); font-style: italic;">Prefix</span></h2>
+                    <div class="gold-divider"></div>
+                    <p class="intro-text">Two ancient Greek words shape the entire lens through which we view modern economics. Changing a single prefix shifts the focus from the granular details of individual choices to the massive waves of national movements.</p>
+                    
+                    <div class="chip" style="border-color: var(--sky); color: var(--sky); background: rgba(56,189,248,0.1);">
+                        💡 Economics: The social science studying how individuals, businesses, and governments allocate scarce resources to satisfy unlimited wants
+                    </div>
+                </div>
+                
+                <div style="display: grid; gap: 1.5rem;">
+                    <div class="pillar pillar-micro">
+                        <div class="greek-char">μικρός</div>
+                        <h3>Micro <span style="font-size: 1rem; font-weight: 300; font-style: italic; color: rgba(255,255,255,0.5);">· small</span></h3>
+                        <p>Focuses on the behavior and decisions of <strong>individual units</strong>. It looks closely at how people and businesses allocate resources within specific markets.</p>
+                    </div>
+                    <div class="pillar pillar-macro">
+                        <div class="greek-char">μακρός</div>
+                        <h3>Macro <span style="font-size: 1rem; font-weight: 300; font-style: italic; color: rgba(255,255,255,0.5);">· large</span></h3>
+                        <p>Focuses on the behavior of the <strong>whole system</strong>. It examines aggregate data to understand the overall performance and structure of a national economy.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide content-slide" id="s3">
+        <div class="container split-layout">
+            <div class="text-content micro">
+                <span class="chip" style="border-color: var(--teal); color: var(--teal); background: rgba(0,201,167,0.1);">03 · Branch One</span>
+                <h2>Microeconomics</h2>
+                <p class="subtitle">The Microscope: Individual Choice</p>
+                <div class="gold-divider" style="background-color: var(--teal);"></div>
+                <p style="color: rgba(255,255,255,0.7); line-height: 1.6;">Micro zooms in on the foundational building blocks. It studies <em>how</em> and <em>why</em> people and businesses make the choices that shape daily markets.</p>
+                
+                <ul class="bullet-list">
+                    <li>
+                        <div class="bullet-num">01</div>
+                        <div>
+                            <div class="bullet-title">Consumer Behavior</div>
+                            <div class="bullet-desc">How individuals decide what to buy, save, or skip.</div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="bullet-num">02</div>
+                        <div>
+                            <div class="bullet-title">Supply & Demand</div>
+                            <div class="bullet-desc">Pricing forces for specific products in specific markets.</div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="bullet-num">03</div>
+                        <div>
+                            <div class="bullet-title">Firm-Level Decisions</div>
+                            <div class="bullet-desc">How a single business sets prices, hires, and produces.</div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="visual-box micro">
+                <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80" alt="Bakery showcase representing a single market">
+                <div class="visual-caption"><strong>Focus:</strong> One bakery. One product. One price.</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide content-slide" id="s4">
+        <div class="container split-layout">
+            <div class="visual-box macro" style="order: 2;">
+                <img src="https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=800&q=80" alt="Expansive modern city skyline representing macro economy">
+                <div class="visual-caption"><strong>Focus:</strong> Millions of decisions happening across a whole nation.</div>
+            </div>
+
+            <div class="text-content macro" style="order: 1;">
+                <span class="chip" style="border-color: var(--coral); color: var(--coral); background: rgba(255,107,107,0.1);">04 · Branch Two</span>
+                <h2>Macroeconomics</h2>
+                <p class="subtitle">The Satellite: National Stability</p>
+                <div class="gold-divider" style="background-color: var(--coral);"></div>
+                <p style="color: rgba(255,255,255,0.7); line-height: 1.6;">Macro rises high above the marketplace to evaluate the total "Aggregate". It gauges the health of an entire nation by tracking massive economic shifts.</p>
+                
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <span style="color: var(--coral);">GDP</span>
+                        <small>Total national output and wealth generation.</small>
+                    </div>
+                    <div class="metric-card">
+                        <span style="color: var(--coral);">Inflation</span>
+                        <small>Pace of rising prices across the system.</small>
+                    </div>
+                    <div class="metric-card">
+                        <span style="color: var(--coral);">Unemployment</span>
+                        <small>Percentage of labor force without work.</small>
+                    </div>
+                    <div class="metric-card">
+                        <span style="color: var(--coral);">Global Trade</span>
+                        <small>International commerce and policy.</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide" id="s5">
+        <div class="container">
+            <p class="slide-num">05 — Summary</p>
+            <h2 style="font-family: 'Poppins', sans-serif; font-size: 3rem; font-weight: 900; margin-bottom: 1rem;">The Complete Picture</h2>
+            <p style="color: rgba(255,255,255,0.7); max-width: 700px; margin: 0 auto; line-height: 1.6;">Both branches study the same economy from different distances. Neither is more important than the other — you need both to truly understand how the world works.</p>
+            
+            <div class="compare-grid">
+                <div class="compare-col micro-col">
+                    <h3>🔍 Micro Questions</h3>
+                    <ul>
+                        <li>Why does this product cost exactly what it costs?</li>
+                        <li>How do consumers decide what to buy?</li>
+                        <li>How do businesses set prices for profit?</li>
+                        <li>What happens when supply drops in a local market?</li>
+                    </ul>
+                </div>
+                
+                <div class="vs-badge">VS</div>
+                
+                <div class="compare-col macro-col">
+                    <h3>🌐 Macro Questions</h3>
+                    <ul>
+                        <li>Why is the entire country experiencing inflation?</li>
+                        <li>Why did millions lose their jobs in a recession?</li>
+                        <li>Should the government raise or cut taxes?</li>
+                        <li>How much is the nation producing in total (GDP)?</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<nav class="nav">
+    <button id="btn-prev" disabled>← Prev</button>
+    <div class="dots" id="nav-dots"></div>
+    <button id="btn-next">Next →</button>
+</nav>
+
+<script>
+    const slides = document.querySelectorAll('.slide');
+    const dotsContainer = document.getElementById('nav-dots');
+    const btnPrev = document.getElementById('btn-prev');
+    const btnNext = document.getElementById('btn-next');
+    let currentSlide = 0;
+
+    // Initialize dot indicators
+    slides.forEach((_, i) => {
+        const dot = document.createElement('div');
+        dot.className = 'dot' + (i === 0 ? ' active' : '');
+        dot.onclick = () => goToSlide(i);
+        dotsContainer.appendChild(dot);
+    });
+
+    function goToSlide(index) {
+        if (index < 0 || index >= slides.length) return;
+        
+        // Remove active class and add exit animation
+        slides[currentSlide].classList.remove('active');
+        slides[currentSlide].classList.add('exit');
+        
+        // Clean up exit class after transition
+        const prevIndex = currentSlide;
+        setTimeout(() => slides[prevIndex].classList.remove('exit'), 580);
+        
+        // Set new active slide
+        currentSlide = index;
+        slides[currentSlide].classList.add('active');
+        
+        // Update dots
+        document.querySelectorAll('.dot').forEach((dot, i) => {
+            dot.classList.toggle('active', i === currentSlide);
+        });
+        
+        // Update buttons
+        btnPrev.disabled = currentSlide === 0;
+        btnNext.disabled = currentSlide === slides.length - 1;
+    }
+
+    btnPrev.onclick = () => goToSlide(currentSlide - 1);
+    btnNext.onclick = () => goToSlide(currentSlide + 1);
+
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight' || e.key === 'ArrowDown') goToSlide(currentSlide + 1);
+        if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') goToSlide(currentSlide - 1);
+    });
+</script>
+
+</body>
+</html>
